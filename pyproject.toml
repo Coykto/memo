@@ -1,0 +1,34 @@
+[tool.poetry]
+name = "memo"
+version = "0.1.0"
+description = ""
+authors = ["evgenii.basmov <coykto@gmail.com>"]
+readme = "README.md"
+packages = [
+    { include = "src" }
+]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+pinecone = "^5.4.2"
+openai = "^1.59.6"
+requests = "^2.32.3"
+python-telegram-bot = "^21.10"
+jinja2 = "^3.1.5"
+anthropic = "^0.42.0"
+fastapi = "^0.115.6"
+uvicorn = "^0.34.0"
+python-multipart = "^0.0.20"
+httpx = "^0.28.1"
+pydantic-settings = "^2.7.1"
+
+
+[tool.poetry.group.dev.dependencies]
+ruff = "^0.9.1"
+isort = "^5.13.2"
+black = "^24.10.0"
+pytest = "^8.3.4"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
