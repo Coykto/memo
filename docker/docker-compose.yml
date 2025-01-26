@@ -1,0 +1,40 @@
+services:
+
+  api:
+    container_name: memo_api
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      - ../:/app
+    labels:
+      - "prometheus.scrape=true"
+      - "prometheus.app=memo_api"
+      - "prometheus.port=8000"
+    networks:
+      logging:
+        aliases:
+          - memo-api
+
+  tg:
+    container_name: memo_tg
+    build:
+      context: ..
+      dockerfile: src/clients/telegram_client/docker/Dockerfile
+    volumes:
+      - ../:/app
+    labels:
+      - "prometheus.scrape=true"
+      - "prometheus.app=memo_tg_bot"
+      - "prometheus.port=8000"
+    networks:
+      logging:
+        aliases:
+          - memo-tg
+
+networks:
+  logging:
+    external: true
+    name: logging_network

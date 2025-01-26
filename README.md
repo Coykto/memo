@@ -1,6 +1,8 @@
-### This project provides voice memo storage.
+# Memo
 
-#### Setup
+## This project provides voice memo storage.
+
+### Setup
 
 The project dependencies and virtualenvs are managed by poetry.
 First, create a virtualenv:

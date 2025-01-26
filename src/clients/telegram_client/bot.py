@@ -1,6 +1,7 @@
+import io
+import logging
 from dataclasses import dataclass
 from typing import Optional
-import io
 
 from telegram import Update
 from telegram.ext import Application, ContextTypes, MessageHandler, filters
@@ -9,6 +10,7 @@ from clients.telegram_client.client import MemoAPIClient
 from clients.telegram_client.config import settings
 from clients.telegram_client.processors.html_processor import HTMLProcessor
 from core.models import AudioData
+from log import setup_logging
 
 
 @dataclass
@@ -50,13 +52,15 @@ class TelegramBot:
             username=update.effective_user.first_name,
         )
 
-    async def handle_audio(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    async def handle_audio(
+            self, update: Update, context: ContextTypes.DEFAULT_TYPE
+    ) -> None:
         """Handle incoming audio messages."""
         audio_message = await self._extract_audio_message(update)
         if not audio_message:
             raise NotImplementedError("Unsupported message type")
 
-        print(f"Received a voice message from {audio_message.username}")
+        logging.info(f"Received a voice message from {audio_message.username}")
 
         audio = AudioData(
             file=audio_message.file,
@@ -68,9 +72,11 @@ class TelegramBot:
         html = await self.html_processor.process([stored_memo])
         await update.message.reply_html(html)
 
-    async def handle_search(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    async def handle_search(
+            self, update: Update, context: ContextTypes.DEFAULT_TYPE
+    ) -> None:
         """Handle text search queries."""
-        print(f"Received a text message from {update.effective_user.first_name}")
+        logging.info(f"Received a text message from {update.effective_user.first_name}")
 
         query = update.message.text
         user_id = str(update.effective_chat.id)
@@ -81,17 +87,26 @@ class TelegramBot:
 
     def setup_handlers(self, application: Application) -> None:
         """Set up message handlers for the application."""
-        application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, self.handle_search))
-        application.add_handler(MessageHandler((filters.VOICE | filters.AUDIO) & ~filters.COMMAND, self.handle_audio))
+        application.add_handler(
+            MessageHandler(filters.TEXT & ~filters.COMMAND, self.handle_search)
+        )
+        application.add_handler(
+            MessageHandler(
+                (filters.VOICE | filters.AUDIO) & ~filters.COMMAND, self.handle_audio
+            )
+        )
+        logging.info("Set up Telegram Bot handlers")
 
     def run(self) -> None:
         """Start the bot and run it indefinitely."""
+        logging.info("Starting Telegram Bot client")
         application = Application.builder().token(settings.telegram_api_token).build()
         self.setup_handlers(application)
         application.run_polling(allowed_updates=Update.ALL_TYPES, poll_interval=5)
 
 
 def main() -> None:
+    setup_logging()
     bot = TelegramBot()
     bot.run()
 
