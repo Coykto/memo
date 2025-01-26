@@ -1,3 +1,5 @@
+import logging
+
 from openai import Client
 
 from src.core.models import AudioData, TranscriptionResult
@@ -16,5 +18,5 @@ class OpenAITranscriber(Transcriber):
             model="whisper-1",
             file=(f"audio.{audio.format}", audio.file, f"audio/{audio.format}"),
         )
-        print(f"Transcribed text: {transcription.text}")
+        logging.info(f"Transcribed text: {transcription.text}")
         return TranscriptionResult(text=transcription.text)

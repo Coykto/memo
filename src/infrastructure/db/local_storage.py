@@ -1,4 +1,5 @@
 import json
+import logging
 import os
 from typing import Optional
 from uuid import uuid4
@@ -13,7 +14,7 @@ class LocalStorage(Storage):
         super().__init__()
         self.db_file = "db.json"
         self._ensure_file_exists()
-        print("initialized local db")
+        logging.info("initialized local db")
 
     def _ensure_file_exists(self):
         if not os.path.exists(self.db_file):
@@ -43,7 +44,7 @@ class LocalStorage(Storage):
         db = json.load(open(self.db_file))
         for user_id in db:
             if memo_id in db[user_id]:
-                print(f"Retrieved memo from local db {db[user_id][memo_id]}")
+                logging.info(f"Retrieved memo from local db {db[user_id][memo_id]}")
                 return Memo(
                     id=memo_id,
                     text=db[user_id][memo_id]["text"],
