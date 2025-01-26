@@ -12,9 +12,9 @@ router = APIRouter(prefix="/memos")
 
 @router.post("/", response_model=MemoResponse)
 async def create_memo(
-        user_id: str,
-        audio: UploadFile = File(...),
-        memo_service: MemoService = Depends(get_memo_service),
+    user_id: str,
+    audio: UploadFile = File(...),
+    memo_service: MemoService = Depends(get_memo_service),
 ):
     audio_data = AudioData(
         file=audio.file,

@@ -53,7 +53,7 @@ class TelegramBot:
         )
 
     async def handle_audio(
-            self, update: Update, context: ContextTypes.DEFAULT_TYPE
+        self, update: Update, context: ContextTypes.DEFAULT_TYPE
     ) -> None:
         """Handle incoming audio messages."""
         audio_message = await self._extract_audio_message(update)
@@ -73,7 +73,7 @@ class TelegramBot:
         await update.message.reply_html(html)
 
     async def handle_search(
-            self, update: Update, context: ContextTypes.DEFAULT_TYPE
+        self, update: Update, context: ContextTypes.DEFAULT_TYPE
     ) -> None:
         """Handle text search queries."""
         logging.info(f"Received a text message from {update.effective_user.first_name}")
