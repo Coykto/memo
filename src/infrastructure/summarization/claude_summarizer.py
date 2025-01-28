@@ -14,7 +14,12 @@ class ClaudeSummarizer(Summarizer):
         message = self.client.messages.create(
             model="claude-3-5-sonnet-20241022",
             max_tokens=1024,
-            system="Generate only a single line containing a clear, specific title (max 50 characters) that captures the core topic or action of this voice memo. Return nothing else but the title itself.",
+            system=(
+                "Generate only a single line containing a clear, "
+                "specific title (max 50 characters) that captures "
+                "the core topic or action of this voice memo. "
+                "Return nothing else but the title itself."
+            ),
             messages=[{"role": "user", "content": text}],
         )
         return Summary(

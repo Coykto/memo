@@ -11,9 +11,13 @@ class PineconeVectorStorage(VectorStorage):
 
     async def store_vector(self, vector: list[float], memo_id: str, metadata: dict):
         """Store vector in database"""
-        self.index.upsert(vectors=[{"id": memo_id, "values": vector, "metadata": metadata}])
+        self.index.upsert(
+            vectors=[{"id": memo_id, "values": vector, "metadata": metadata}]
+        )
 
-    async def search(self, query_vector: list[float], user_id: str, limit: int = 3) -> list[dict]:
+    async def search(
+        self, query_vector: list[float], user_id: str, limit: int = 3
+    ) -> list[dict]:
         """Search for similar vectors"""
         response = self.index.query(
             vector=query_vector,
@@ -23,4 +27,7 @@ class PineconeVectorStorage(VectorStorage):
             filter={"user_id": {"$eq": user_id}},
         )
 
-        return [{"id": match.id, "score": match.score, "metadata": match.metadata} for match in response.matches]
+        return [
+            {"id": match.id, "score": match.score, "metadata": match.metadata}
+            for match in response.matches
+        ]

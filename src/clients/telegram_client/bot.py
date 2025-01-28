@@ -2,6 +2,7 @@ import io
 import logging
 from dataclasses import dataclass
 from typing import Optional
+from uuid import uuid4
 
 from telegram import Update
 from telegram.ext import Application, ContextTypes, MessageHandler, filters
@@ -9,8 +10,9 @@ from telegram.ext import Application, ContextTypes, MessageHandler, filters
 from clients.telegram_client.client import MemoAPIClient
 from clients.telegram_client.config import settings
 from clients.telegram_client.processors.html_processor import HTMLProcessor
+from core.context import set_request_id
+from core.log import setup_logging
 from core.models import AudioData
-from log import setup_logging
 
 
 @dataclass
@@ -56,6 +58,7 @@ class TelegramBot:
         self, update: Update, context: ContextTypes.DEFAULT_TYPE
     ) -> None:
         """Handle incoming audio messages."""
+        set_request_id(str(uuid4()))
         audio_message = await self._extract_audio_message(update)
         if not audio_message:
             raise NotImplementedError("Unsupported message type")
@@ -76,6 +79,7 @@ class TelegramBot:
         self, update: Update, context: ContextTypes.DEFAULT_TYPE
     ) -> None:
         """Handle text search queries."""
+        set_request_id(str(uuid4()))
         logging.info(f"Received a text message from {update.effective_user.first_name}")
 
         query = update.message.text
