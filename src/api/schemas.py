@@ -1,7 +1,7 @@
 # src/api/schemas.py
 from typing import List
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from src.core.models import Memo, SearchResult
 
@@ -31,7 +31,7 @@ class SearchQuery(BaseModel):
 
     query: str
     user_id: str
-    limit: int = 10
+    limit: int = Field(10, ge=1, le=100)
 
 
 class SearchResponse(BaseModel):

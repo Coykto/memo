@@ -22,7 +22,6 @@ class PineconeVectorStorage(VectorStorage):
         response = self.index.query(
             vector=query_vector,
             top_k=limit,
-            # include_values=True,
             include_metadata=True,
             filter={"user_id": {"$eq": user_id}},
         )

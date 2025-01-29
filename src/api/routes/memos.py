@@ -1,5 +1,3 @@
-import logging
-
 from fastapi import APIRouter, Depends, File, UploadFile
 
 from src.api.dependencies import get_memo_service
@@ -23,9 +21,3 @@ async def create_memo(
 
     memo = await memo_service.create_memo_from_audio(audio_data, user_id)
     return MemoResponse.from_memo(memo)
-
-
-@router.get("/")
-async def check():
-    logging.info("Check request")
-    return {"message": "ok"}

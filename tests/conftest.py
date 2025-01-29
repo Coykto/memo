@@ -3,11 +3,11 @@ from fastapi.testclient import TestClient
 
 from src.api.app import app
 from src.core.models import AudioData, Memo, TranscriptionResult, VectorData
-from src.infrastructure.transcription.base import Transcriber
-from src.infrastructure.vectorization.base import Vectorizer
-from src.infrastructure.vector_db.base import VectorStorage
 from src.infrastructure.db.base import Storage
 from src.infrastructure.summarization.base import Summarizer
+from src.infrastructure.transcription.base import Transcriber
+from src.infrastructure.vector_db.base import VectorStorage
+from src.infrastructure.vectorization.base import Vectorizer
 
 
 @pytest.fixture
@@ -28,11 +28,7 @@ def mock_transcriber():
 def mock_vectorizer():
     class MockVectorizer(Vectorizer):
         async def vectorize(self, text: str) -> VectorData:
-            return VectorData(
-                vector=[0.1, 0.2, 0.3],
-                text=text,
-                metadata={}
-            )
+            return VectorData(vector=[0.1, 0.2, 0.3], text=text, metadata={})
 
     return MockVectorizer()
 
@@ -43,13 +39,11 @@ def mock_vector_storage():
         async def store_vector(self, vector: list[float], memo_id: str, metadata: dict):
             pass
 
-        async def search(self, query_vector: list[float], user_id: str, limit: int = 10) -> list[dict]:
+        async def search(
+            self, query_vector: list[float], user_id: str, limit: int = 10
+        ) -> list[dict]:
             return [
-                {
-                    "id": "test-memo-id",
-                    "score": 0.95,
-                    "metadata": {"user_id": user_id}
-                }
+                {"id": "test-memo-id", "score": 0.95, "metadata": {"user_id": user_id}}
             ]
 
     return MockVectorStorage()
@@ -67,7 +61,7 @@ def mock_storage():
                 text="Test memo text",
                 title="Test memo title",
                 user_id="test-user",
-                vector=[0.1, 0.2, 0.3]
+                vector=[0.1, 0.2, 0.3],
             )
 
     return MockStorage()
@@ -80,3 +74,10 @@ def mock_summarizer():
             return "Test summary"
 
     return MockSummarizer()
+
+
+@pytest.fixture(autouse=True, scope="function")
+def cleanup(test_client):
+    yield
+    # Clear any overridden dependencies
+    test_client.app.dependency_overrides = {}

@@ -1,5 +1,5 @@
 from io import IOBase
-from typing import Optional
+from typing import Optional, Literal
 
 from pydantic import BaseModel, Field
 
@@ -8,7 +8,9 @@ class AudioData(BaseModel):
     """Container for audio data"""
 
     file: IOBase
-    format: str = Field(description="Audio format e.g., 'wav', 'ogg'")
+    format: Literal[
+        "flac", "m4a", "mp3", "mp4", "mpeg", "mpga", "oga", "ogg", "wav", "webm"
+    ] = Field(description="Audio format e.g., 'wav', 'ogg'")
 
     class Config:
         arbitrary_types_allowed = True  # Needed for BinaryIO

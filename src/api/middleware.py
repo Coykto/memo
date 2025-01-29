@@ -1,4 +1,3 @@
-import logging
 from uuid import uuid4
 
 from fastapi import Request
@@ -12,12 +11,6 @@ class RequestContextMiddleware(BaseHTTPMiddleware):
         request_id = request.headers.get("X-Request-ID") or str(uuid4())
         set_request_id(request_id)
 
-        try:
-            response = await call_next(request)
-            response.headers["X-Request-ID"] = get_request_id()
-            return response
-        except Exception as e:
-            logging.error(
-                "Request failed", extra={"path": request.url.path, "error": str(e)}
-            )
-            raise
+        response = await call_next(request)
+        response.headers["X-Request-ID"] = get_request_id()
+        return response

@@ -1,3 +1,5 @@
+import logging
+
 from src.core.models import SearchResult
 from src.core.processors.text import TextProcessor
 from src.infrastructure.db.base import Storage
@@ -21,12 +23,21 @@ class SearchEngine:
         vector_data = await self.text_processor.process(query)
 
         # Search vector database
-        vector_results = await self.vector_storage.search(vector_data.vector, user_id, limit)
+        vector_results = await self.vector_storage.search(
+            vector_data.vector, user_id, limit
+        )
 
         # Fetch full texts from database
         results = []
         for vec_result in vector_results:
             memo = await self.storage.get_memo(vec_result["id"])
+            if memo is None:
+                logging.warning(
+                    f"Memo {vec_result['id']} found in vector storage but missing from main storage",
+                    extra={"user_id": user_id},
+                )
+                continue
+
             results.append(
                 SearchResult(
                     memo=memo,
