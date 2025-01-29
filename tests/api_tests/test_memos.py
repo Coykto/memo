@@ -34,7 +34,7 @@ def test_create_memo_success(test_client, mock_memo_service):
 
     # Make request
     response = test_client.post(
-        f"/memos/?user_id={test_user_id}",
+        f"/v1/memos/?user_id={test_user_id}",
         files={"audio": ("test.wav", test_file, "audio/wav")},
     )
 
@@ -63,7 +63,7 @@ def test_create_memo_missing_user_id(test_client, mock_memo_service):
 
     # Make request without user_id
     response = test_client.post(
-        "/memos/", files={"audio": ("test.wav", test_file, "audio/wav")}
+        "/v1/memos/", files={"audio": ("test.wav", test_file, "audio/wav")}
     )
 
     # Verify response
@@ -76,7 +76,7 @@ def test_create_memo_missing_file(test_client, mock_memo_service):
     test_client.app.dependency_overrides[get_memo_service] = lambda: mock_memo_service
 
     # Make request without file
-    response = test_client.post("/memos/?user_id=test-user")
+    response = test_client.post("/v1/memos/?user_id=test-user")
 
     # Verify response
     assert response.status_code == 422  # Validation error
@@ -92,7 +92,7 @@ def test_create_memo_invalid_file_type(test_client, mock_memo_service):
 
     # Make request with text file instead of audio
     response = test_client.post(
-        "/memos/?user_id=test-user",
+        "/v1/memos/?user_id=test-user",
         files={"audio": ("test.txt", test_file, "text/plain")},
     )
 
@@ -116,7 +116,7 @@ def test_create_memo_service_error(test_client, mock_memo_service):
 
     # Make request
     response = test_client.post(
-        f"/memos/?user_id={test_user_id}",
+        f"/v1/memos/?user_id={test_user_id}",
         files={"audio": ("test.wav", test_file, "audio/wav")},
     )
 
@@ -132,7 +132,7 @@ def test_create_memo_empty_file(test_client, mock_memo_service):
     empty_file = io.BytesIO(b"")
 
     response = test_client.post(
-        "/memos/?user_id=test-user",
+        "/v1/memos/?user_id=test-user",
         files={"audio": ("empty.wav", empty_file, "audio/wav")},
     )
 
@@ -165,7 +165,8 @@ def test_create_memo_malformed_audio(
     test_client.app.dependency_overrides[get_memo_service] = lambda: mock_memo_service
 
     response = test_client.post(
-        "/memos/?user_id=test-user", files={"audio": (filename, file_obj, "audio/wav")}
+        "/v1/memos/?user_id=test-user",
+        files={"audio": (filename, file_obj, "audio/wav")},
     )
 
     # Verify response

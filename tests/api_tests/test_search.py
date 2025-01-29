@@ -27,7 +27,7 @@ def test_search_memos_success(test_client, mock_search_engine):
 
     # Make request
     response = test_client.post(
-        "/search/", json={"query": test_query, "user_id": test_user_id, "limit": 10}
+        "/v1/search/", json={"query": test_query, "user_id": test_user_id, "limit": 10}
     )
 
     # Verify response
@@ -51,7 +51,7 @@ def test_search_memos_empty_results(test_client, mock_search_engine):
 
     # Make request
     response = test_client.post(
-        "/search/",
+        "/v1/search/",
         json={"query": "no results query", "user_id": "test-user", "limit": 10},
     )
 
@@ -67,11 +67,11 @@ def test_search_memos_missing_required_fields(test_client, mock_search_engine):
     test_client.app.dependency_overrides[get_search_engine] = lambda: mock_search_engine
 
     # Test missing query
-    response = test_client.post("/search/", json={"user_id": "test-user"})
+    response = test_client.post("/v1/search/", json={"user_id": "test-user"})
     assert response.status_code == 422
 
     # Test missing user_id
-    response = test_client.post("/search/", json={"query": "test query"})
+    response = test_client.post("/v1/search/", json={"query": "test query"})
     assert response.status_code == 422
 
 
@@ -81,13 +81,13 @@ def test_search_memos_invalid_limit(test_client, mock_search_engine):
 
     # Test negative limit
     response = test_client.post(
-        "/search/", json={"query": "test query", "user_id": "test-user", "limit": -1}
+        "/v1/search/", json={"query": "test query", "user_id": "test-user", "limit": -1}
     )
     assert response.status_code == 422
 
     # Test zero limit
     response = test_client.post(
-        "/search/", json={"query": "test query", "user_id": "test-user", "limit": 0}
+        "/v1/search/", json={"query": "test query", "user_id": "test-user", "limit": 0}
     )
     assert response.status_code == 422
 
@@ -97,7 +97,7 @@ def test_search_memos_invalid_json(test_client, mock_search_engine):
     test_client.app.dependency_overrides[get_search_engine] = lambda: mock_search_engine
 
     # Send invalid JSON
-    response = test_client.post("/search/", data="not a json")
+    response = test_client.post("/v1/search/", content="not a json")
     assert response.status_code == 422
 
 
@@ -110,7 +110,7 @@ def test_search_memos_service_error(test_client, mock_search_engine):
 
     # Make request
     response = test_client.post(
-        "/search/", json={"query": "test query", "user_id": "test-user", "limit": 10}
+        "/v1/search/", json={"query": "test query", "user_id": "test-user", "limit": 10}
     )
 
     # Verify response

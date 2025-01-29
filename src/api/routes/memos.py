@@ -5,10 +5,20 @@ from src.api.schemas import MemoResponse
 from src.core.models import AudioData
 from src.core.services.memo import MemoService
 
-router = APIRouter(prefix="/memos")
+router = APIRouter(prefix="/v1/memos")
 
 
-@router.post("/", response_model=MemoResponse)
+@router.post(
+    "/",
+    response_model=MemoResponse,
+    summary="Create Voice Memo",
+    description="""
+    Create a new voice memo from an audio file.
+    
+    Supported audio formats: flac, m4a, mp3, mp4, mpeg, mpga, oga, ogg, wav, webm
+    Maximum file size: 25MB
+    Maximum audio duration: 10 minutes""",
+)
 async def create_memo(
     user_id: str,
     audio: UploadFile = File(...),

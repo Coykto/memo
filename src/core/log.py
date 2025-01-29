@@ -3,7 +3,7 @@ import logging
 import logging.config
 from datetime import datetime
 
-from core.context import get_request_id
+from src.core.context import get_request_id
 
 
 class JsonFormatter(logging.Formatter):

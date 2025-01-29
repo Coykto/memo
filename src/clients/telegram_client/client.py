@@ -5,19 +5,20 @@ from core.models import AudioData
 
 
 class MemoAPIClient:
-    def __init__(self, base_url: str):
+    def __init__(self, base_url: str, version: str = "v1"):
         self.client = httpx.AsyncClient(
             base_url=base_url,
             follow_redirects=True,
             timeout=600,
         )
+        self.version = version
 
     async def store_memo(self, audio: AudioData, user_id: str):
         files = {
             "audio": (f"audio.{audio.format}", audio.file, f"audio/{audio.format}")
         }
         response = await self.client.post(
-            "/memos",
+            f"/{self.version}/memos",
             params={"user_id": user_id},
             files=files,
             headers={"X-Request-ID": get_request_id()},
@@ -26,7 +27,7 @@ class MemoAPIClient:
 
     async def search_memos(self, query: str, user_id: str):
         response = await self.client.post(
-            "/search",
+            f"/{self.version}/search",
             json={"query": query, "user_id": user_id},
             headers={"X-Request-ID": get_request_id()},
         )

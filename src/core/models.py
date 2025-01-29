@@ -1,7 +1,7 @@
 from io import IOBase
 from typing import Optional, Literal
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 
 
 class AudioData(BaseModel):
@@ -12,8 +12,7 @@ class AudioData(BaseModel):
         "flac", "m4a", "mp3", "mp4", "mpeg", "mpga", "oga", "ogg", "wav", "webm"
     ] = Field(description="Audio format e.g., 'wav', 'ogg'")
 
-    class Config:
-        arbitrary_types_allowed = True  # Needed for BinaryIO
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
 
 class TranscriptionResult(BaseModel):
@@ -42,8 +41,8 @@ class Memo(BaseModel):
     user_id: str
     vector: Optional[list[float]] = None
 
-    class Config:
-        json_schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "id": "123e4567-e89b-12d3-a456-426614174000",
                 "text": "Remember to buy groceries tomorrow",
@@ -51,6 +50,7 @@ class Memo(BaseModel):
                 "user_id": "user123",
             }
         }
+    )
 
 
 class SearchResult(BaseModel):
