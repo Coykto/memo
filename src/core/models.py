@@ -1,7 +1,8 @@
 from io import IOBase
+from src.api.validators import is_non_empty_file
 from typing import Optional, Literal
 
-from pydantic import BaseModel, Field, ConfigDict
+from pydantic import BaseModel, Field, ConfigDict, field_validator
 
 
 class AudioData(BaseModel):
@@ -13,6 +14,12 @@ class AudioData(BaseModel):
     ] = Field(description="Audio format e.g., 'wav', 'ogg'")
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
+
+    @field_validator("file")
+    def validate_file(cls, v):
+        if not is_non_empty_file(v):
+            raise ValueError("Invalid file format")
+        return v
 
 
 class TranscriptionResult(BaseModel):

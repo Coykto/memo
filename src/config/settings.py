@@ -10,4 +10,7 @@ class Settings(BaseSettings):
     pinecone_host: str
     claude_api_key: str
 
-    model_config = ConfigDict(env_file=Path(__file__).parent / ".env")
+    model_config = ConfigDict(
+        extra="allow",
+        env_file=Path(__file__).parent / ".env"
+    )
