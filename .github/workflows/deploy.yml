@@ -23,6 +23,7 @@ jobs:
 
   check-environment:
     runs-on: ubuntu-latest
+    needs: [lint-and-test]
     outputs:
       environment: ${{ steps.set-env.outputs.environment }}
     steps:
