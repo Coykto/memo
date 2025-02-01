@@ -9,7 +9,7 @@ class Settings(BaseSettings):
     pinecone_api_key: str
     pinecone_host: str
     claude_api_key: str
-    data_folder: Path = Path("/data")
+    data_folder: Path
 
     model_config = ConfigDict(
         extra="allow",

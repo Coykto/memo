@@ -17,6 +17,10 @@ on:
           - DEV
 
 jobs:
+  lint-and-test:
+    if: github.event_name == 'pull_request' && github.event.pull_request.merged == true
+    uses: ./.github/workflows/lint-test.yml
+
   check-environment:
     runs-on: ubuntu-latest
     outputs:
@@ -103,6 +107,7 @@ jobs:
           CLAUDE_API_KEY=${{ secrets[format('{0}_CLAUDE_API_KEY', needs.check-environment.outputs.environment)] }}
           TELEGRAM_API_TOKEN=${{ secrets[format('{0}_TELEGRAM_API_TOKEN', needs.check-environment.outputs.environment)] }}
           DOCKERHUB_USERNAME=${{ secrets.DOCKERHUB_USERNAME }}
+          DATA_FOLDER=/data
           TAG=${{ steps.get_version.outputs.VERSION }}
           EOF
 
