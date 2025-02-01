@@ -111,9 +111,9 @@ jobs:
           TELEGRAM_API_TOKEN=${{ secrets[format('{0}_TELEGRAM_API_TOKEN', needs.check-environment.outputs.environment)] }}
           DOCKERHUB_USERNAME=${{ secrets.DOCKERHUB_USERNAME }}
           DATA_FOLDER=/data
-          UID=${{ secrets[format('{0}_SSH_USERNAME', needs.check-environment.outputs.environment)] }}
-          GID=${{ secrets[format('{0}_SSH_USERNAME', needs.check-environment.outputs.environment)] }}
-          TAG=${{ steps.get_version.outputs.VERSION }}
+          UID=${{ secrets[format('{0}_SSH_UID', needs.check-environment.outputs.environment)] }}
+          GID=${{ secrets[format('{0}_SSH_GID', needs.check-environment.outputs.environment)] }}
+          TAG=${{ steKps.get_version.outputs.VERSION }}
           EOF
 
       - name: Deploy to server
