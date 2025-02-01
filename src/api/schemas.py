@@ -20,10 +20,11 @@ class MemoResponse(BaseModel):
     id: str
     text: str
     title: str
+    date: str
 
     @classmethod
     def from_memo(cls, memo: Memo) -> "MemoResponse":
-        return cls(id=memo.id, text=memo.text, title=memo.title)
+        return cls(id=memo.id, text=memo.text, title=memo.title, date=memo.date)
 
 
 class SearchQuery(BaseModel):
@@ -31,7 +32,7 @@ class SearchQuery(BaseModel):
 
     query: str
     user_id: str
-    limit: int = Field(10, ge=1, le=100)
+    limit: int = Field(5, ge=1, le=100)
 
 
 class SearchResponse(BaseModel):

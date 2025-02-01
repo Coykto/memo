@@ -46,6 +46,7 @@ class Memo(BaseModel):
     text: str
     title: str
     user_id: str
+    date: str
     vector: Optional[list[float]] = None
 
     model_config = ConfigDict(
@@ -55,6 +56,8 @@ class Memo(BaseModel):
                 "text": "Remember to buy groceries tomorrow",
                 "title": "Shopping reminder",
                 "user_id": "user123",
+                "date": "2025-02-01T15:31:12.148899",
+                "vector": [0.11231, 0.323]
             }
         }
     )

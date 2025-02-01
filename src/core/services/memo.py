@@ -43,4 +43,5 @@ class MemoService:
             title=memo.title,
             user_id=user_id,
             vector=vector_data.vector,
+            date=memo.date,
         )

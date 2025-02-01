@@ -2,6 +2,7 @@ import io
 from unittest.mock import AsyncMock
 
 import pytest
+from datetime import datetime
 
 from src.api.dependencies import get_memo_service
 from src.core.models import Memo
@@ -20,6 +21,7 @@ def test_create_memo_success(test_client, mock_memo_service):
         text="Test transcription",
         title="Test title",
         user_id=test_user_id,
+        date=datetime.now().isoformat(),
     )
 
     # Configure mock service to return our test memo
