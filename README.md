@@ -57,26 +57,21 @@ docker-compose -f docker/docker-compose.yml up -d
 
 ## Development Setup
 
-1. Install Poetry if you haven't already:
+1. Install UV if you haven't already:
 ```bash
-curl -sSL https://install.python-poetry.org | python3 -
+pip install uv
 ```
 
 2. Install dependencies:
 ```bash
-poetry install
+uv sync
 ```
 
-This will install all dependencies, including development dependencies, in a new virtual environment managed by Poetry.
-
-3. Activate the virtual environment:
-```bash
-poetry shell
-```
+This will install all dependencies, including development dependencies, in a new virtual environment managed by UV.
 
 3. Run tests:
 ```bash
-pytest
+uv run pytest
 ```
 
 ## API Documentation
