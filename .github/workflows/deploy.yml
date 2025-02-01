@@ -123,7 +123,7 @@ jobs:
           port: ${{ secrets[format('{0}_SSH_PORT', needs.check-environment.outputs.environment)] }}
           username: ${{ secrets[format('{0}_SSH_USERNAME', needs.check-environment.outputs.environment)] }}
           key: ${{ secrets[format('{0}_SSH_PRIVATE_KEY', needs.check-environment.outputs.environment)] }}
-          source: "docker/*"
+          source: "docker/.env,docker/docker-compose.yml"
           strip_components: 1
           target: ${{ secrets[format('{0}_SSH_PATH', needs.check-environment.outputs.environment)] }}
 

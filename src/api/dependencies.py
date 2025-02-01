@@ -42,8 +42,8 @@ def get_summarizer(settings: Settings = Depends(get_settings)) -> Summarizer:
     return ClaudeSummarizer(api_key=settings.claude_api_key)
 
 
-def get_memo_store() -> LocalStorage:
-    return LocalStorage()
+def get_memo_store(settings: Settings = Depends(get_settings)) -> LocalStorage:
+    return LocalStorage(settings)
 
 
 def get_audio_processor(
