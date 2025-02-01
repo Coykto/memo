@@ -72,6 +72,7 @@ jobs:
           context: .
           file: docker/Dockerfile
           push: true
+          platforms: linux/amd64, linux/arm64/v8
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/memo_api:latest
             ${{ secrets.DOCKERHUB_USERNAME }}/memo_api:${{ steps.get_version.outputs.VERSION }}
@@ -82,6 +83,7 @@ jobs:
           context: .
           file: src/clients/telegram_client/docker/Dockerfile
           push: true
+          platforms: linux/amd64, linux/arm64/v8
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/memo_tg:latest
             ${{ secrets.DOCKERHUB_USERNAME }}/memo_tg:${{ steps.get_version.outputs.VERSION }}
@@ -117,7 +119,6 @@ jobs:
           key: ${{ secrets[format('{0}_SSH_PRIVATE_KEY', needs.check-environment.outputs.environment)] }}
           source: ".env,docker/docker-compose.yml"
           target: ${{ secrets[format('{0}_SSH_PATH', needs.check-environment.outputs.environment)] }}
-          strip_components: 0
 
       - name: Start application
         uses: appleboy/ssh-action@v1.0.3
