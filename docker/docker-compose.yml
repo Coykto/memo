@@ -1,6 +1,6 @@
 services:
 
-  api:
+  memo_api:
     container_name: memo_api
     build:
       context: ..
@@ -15,10 +15,8 @@ services:
       - "prometheus.port=8000"
     networks:
       logging:
-        aliases:
-          - memo-api
 
-  tg:
+  memo_tg_bot:
     container_name: memo_tg
     build:
       context: ..
@@ -31,8 +29,6 @@ services:
       - "prometheus.port=8000"
     networks:
       logging:
-        aliases:
-          - memo-tg
 
 networks:
   logging:
