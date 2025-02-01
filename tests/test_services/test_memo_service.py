@@ -1,4 +1,5 @@
 import io
+from datetime import datetime
 from unittest.mock import AsyncMock
 
 import pytest
@@ -17,6 +18,7 @@ async def test_create_memo_complete_flow():
     test_summary = "Test Summary Title"
     test_vector = [0.1, 0.2, 0.3]
     test_memo_id = "test-memo-123"
+    test_memo_date = datetime.now().isoformat()
 
     # Configure mocks
     mock_audio_processor = AsyncMock()
@@ -42,6 +44,7 @@ async def test_create_memo_complete_flow():
         title=test_summary,
         user_id=test_user_id,
         vector=test_vector,
+        date=test_memo_date,
     )
 
     mock_vector_storage = AsyncMock()
@@ -76,6 +79,7 @@ async def test_create_memo_complete_flow():
     assert result.title == test_summary
     assert result.user_id == test_user_id
     assert result.vector == test_vector
+    assert result.date == test_memo_date
 
 
 async def test_create_memo_transcription_error():

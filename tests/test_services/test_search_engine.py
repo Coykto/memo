@@ -1,3 +1,4 @@
+from datetime import datetime
 from unittest.mock import AsyncMock
 
 import pytest
@@ -14,6 +15,7 @@ async def test_search_complete_flow():
     user_id = "test-user"
     test_vector = [0.1, 0.2, 0.3]
     mock_memo_id = "test-memo-id"
+    test_memo_date=datetime.now().isoformat()
 
     # Configure mocks with specific returns
     mock_text_processor = AsyncMock()
@@ -28,7 +30,7 @@ async def test_search_complete_flow():
 
     mock_storage = AsyncMock()
     mock_storage.get_memo.return_value = Memo(
-        id=mock_memo_id, text="Test memo content", title="Test memo", user_id=user_id
+        id=mock_memo_id, text="Test memo content", title="Test memo", user_id=user_id, date=test_memo_date
     )
 
     engine = SearchEngine(
@@ -49,6 +51,7 @@ async def test_search_complete_flow():
     assert results[0].score == 0.95
     assert results[0].memo.id == mock_memo_id
     assert results[0].memo.user_id == user_id
+    assert results[0].memo.date == test_memo_date
 
 
 async def test_empty_search_results():
@@ -120,6 +123,7 @@ async def test_search_with_missing_memo():
                 text="Existing memo text",
                 title="Existing memo",
                 user_id=user_id,
+                date=datetime.now().isoformat(),
             )
         return None
 
@@ -329,7 +333,7 @@ async def test_search_minimum_score_threshold():
 
     mock_storage = AsyncMock()
     mock_storage.get_memo.side_effect = lambda memo_id: Memo(
-        id=memo_id, text=f"Memo {memo_id}", title=f"Title {memo_id}", user_id=user_id
+        id=memo_id, text=f"Memo {memo_id}", title=f"Title {memo_id}", user_id=user_id, date=datetime.now().isoformat()
     )
 
     search_engine = SearchEngine(

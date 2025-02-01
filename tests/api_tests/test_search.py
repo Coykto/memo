@@ -1,6 +1,7 @@
 from unittest.mock import AsyncMock
 
 import pytest
+from datetime import datetime
 
 from src.api.dependencies import get_search_engine
 from src.core.models import Memo, SearchResult
@@ -16,7 +17,7 @@ def test_search_memos_success(test_client, mock_search_engine):
     test_user_id = "test-user-123"
     test_query = "test query"
     test_memo = Memo(
-        id="test-memo-id", text="Test content", title="Test title", user_id=test_user_id
+        id="test-memo-id", text="Test content", title="Test title", user_id=test_user_id, date=datetime.now().isoformat()
     )
 
     # Configure mock to return results

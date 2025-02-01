@@ -1,6 +1,7 @@
 import json
 import logging
 import os
+from datetime import datetime
 from pathlib import Path
 from typing import Optional
 from uuid import uuid4
@@ -30,12 +31,14 @@ class LocalStorage(Storage):
             db[user_id][memo_id] = {
                 "text": text,
                 "title": title,
+                "date": datetime.now().isoformat(),
             }
         else:
             db[user_id] = {
                 memo_id: {
                     "text": text,
                     "title": title,
+                    "date": datetime.now().isoformat(),
                 }
             }
         json.dump(db, open(self.db_file, "w"), indent=4, ensure_ascii=False)
@@ -51,6 +54,7 @@ class LocalStorage(Storage):
                     id=memo_id,
                     text=db[user_id][memo_id]["text"],
                     title=db[user_id][memo_id]["title"],
+                    date=db[user_id][memo_id]["date"],
                     user_id=user_id,
                 )
         return None
