@@ -1,18 +1,20 @@
 import json
 import logging
 import os
+from pathlib import Path
 from typing import Optional
 from uuid import uuid4
 
 from src.core.models import Memo
+from src.config.settings import Settings
 from src.infrastructure.db.base import Storage
 
 
 class LocalStorage(Storage):
 
-    def __init__(self):
+    def __init__(self, settings: Settings):
         super().__init__()
-        self.db_file = "db.json"
+        self.db_file = Path(settings.data_folder / "db.json")
         self._ensure_file_exists()
         logging.info("initialized local db")
 

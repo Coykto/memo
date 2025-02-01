@@ -9,7 +9,7 @@ services:
       - PINECONE_HOST=${PINECONE_HOST}
       - CLAUDE_API_KEY=${CLAUDE_API_KEY}
     volumes:
-      - ./api_data:/app
+      - ./api_data:/data
     labels:
       - "prometheus.scrape=true"
       - "prometheus.app=memo_api"
@@ -25,7 +25,7 @@ services:
       - TELEGRAM_API_TOKEN=${TELEGRAM_API_TOKEN}
       - API_BASE_URL=http://memo_api:8000
     volumes:
-      - ./tg_data:/app
+      - ./tg_data:/data
     depends_on:
       - memo_api
     labels:
