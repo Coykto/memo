@@ -8,18 +8,17 @@ ENV PYTHONPATH=/app/src \
 # Set working directory
 WORKDIR /app
 
-# Install system dependencies and Poetry
+# Install system dependencies and UV
 RUN pip install --upgrade pip && \
-    pip install poetry
+    pip install uv
 
 # Copy dependency files
-COPY pyproject.toml poetry.lock ./
+COPY pyproject.toml uv.lock ./
 
 # Install project dependencies (without root package)
-RUN poetry config virtualenvs.create false && \
-    poetry install --no-interaction --no-ansi --no-root
+RUN uv sync
 
 # Copy source code
 COPY src/ src/
 
-ENTRYPOINT ["poetry", "run", "python", "src/clients/telegram_client/bot.py"]
+ENTRYPOINT ["uv", "run", "python", "src/clients/telegram_client/bot.py"]
