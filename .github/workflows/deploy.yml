@@ -73,7 +73,7 @@ jobs:
         run: echo "VERSION=$(git describe --tags --abbrev=0)" >> $GITHUB_OUTPUT
 
       - name: Build and push API image
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           context: .
           file: docker/Dockerfile
@@ -84,7 +84,7 @@ jobs:
             ${{ secrets.DOCKERHUB_USERNAME }}/memo_api:${{ steps.get_version.outputs.VERSION }}
 
       - name: Build and push Telegram bot image
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           context: .
           file: src/clients/telegram_client/docker/Dockerfile
