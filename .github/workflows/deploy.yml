@@ -50,12 +50,6 @@ jobs:
     runs-on: ubuntu-latest
     needs: [check-environment, create-tag]
     environment: ${{ needs.check-environment.outputs.environment }}
-    strategy:
-      matrix:
-        include:
-          - environment: PROD
-          - environment: STAGING
-          - environment: DEV
 
     steps:
       - uses: actions/checkout@v4
@@ -95,11 +89,11 @@ jobs:
       - name: Create env file
         run: |
           cat << EOF > .env
-          OPENAI_API_KEY=${{ secrets[format('{0}_OPENAI_API_KEY', matrix.environment)] }}
-          PINECONE_API_KEY=${{ secrets[format('{0}_PINECONE_API_KEY', matrix.environment)] }}
-          PINECONE_HOST=${{ secrets[format('{0}_PINECONE_HOST', matrix.environment)] }}
-          CLAUDE_API_KEY=${{ secrets[format('{0}_CLAUDE_API_KEY', matrix.environment)] }}
-          TELEGRAM_API_TOKEN=${{ secrets[format('{0}_TELEGRAM_API_TOKEN', matrix.environment)] }}
+          OPENAI_API_KEY=${{ secrets[format('{0}_OPENAI_API_KEY', needs.check-environment.outputs.environment)] }}
+          PINECONE_API_KEY=${{ secrets[format('{0}_PINECONE_API_KEY', needs.check-environment.outputs.environment)] }}
+          PINECONE_HOST=${{ secrets[format('{0}_PINECONE_HOST', needs.check-environment.outputs.environment)] }}
+          CLAUDE_API_KEY=${{ secrets[format('{0}_CLAUDE_API_KEY', needs.check-environment.outputs.environment)] }}
+          TELEGRAM_API_TOKEN=${{ secrets[format('{0}_TELEGRAM_API_TOKEN', needs.check-environment.outputs.environment)] }}
           DOCKERHUB_USERNAME=${{ secrets.DOCKERHUB_USERNAME }}
           TAG=${{ steps.get_version.outputs.VERSION }}
           EOF
@@ -107,33 +101,33 @@ jobs:
       - name: Deploy to server
         uses: appleboy/ssh-action@v1.0.3
         with:
-          host: ${{ secrets[format('{0}_SSH_HOST', matrix.environment)] }}
-          port: ${{ secrets[format('{0}_SSH_PORT', matrix.environment)] }}
-          username: ${{ secrets[format('{0}_SSH_USERNAME', matrix.environment)] }}
-          key: ${{ secrets[format('{0}_SSH_PRIVATE_KEY', matrix.environment)] }}
+          host: ${{ secrets[format('{0}_SSH_HOST', needs.check-environment.outputs.environment)] }}
+          port: ${{ secrets[format('{0}_SSH_PORT', needs.check-environment.outputs.environment)] }}
+          username: ${{ secrets[format('{0}_SSH_USERNAME', needs.check-environment.outputs.environment)] }}
+          key: ${{ secrets[format('{0}_SSH_PRIVATE_KEY', needs.check-environment.outputs.environment)] }}
           script: |
-            mkdir -p ${{ secrets[format('{0}_SSH_PATH', matrix.environment)] }}
+            mkdir -p ${{ secrets[format('{0}_SSH_PATH', needs.check-environment.outputs.environment)] }}
 
       - name: Copy files to server
         uses: appleboy/scp-action@v0.1.7
         with:
-          host: ${{ secrets[format('{0}_SSH_HOST', matrix.environment)] }}
-          port: ${{ secrets[format('{0}_SSH_PORT', matrix.environment)] }}
-          username: ${{ secrets[format('{0}_SSH_USERNAME', matrix.environment)] }}
-          key: ${{ secrets[format('{0}_SSH_PRIVATE_KEY', matrix.environment)] }}
+          host: ${{ secrets[format('{0}_SSH_HOST', needs.check-environment.outputs.environment)] }}
+          port: ${{ secrets[format('{0}_SSH_PORT', needs.check-environment.outputs.environment)] }}
+          username: ${{ secrets[format('{0}_SSH_USERNAME', needs.check-environment.outputs.environment)] }}
+          key: ${{ secrets[format('{0}_SSH_PRIVATE_KEY', needs.check-environment.outputs.environment)] }}
           source: "docker/docker-compose.prod.yml,.env"
-          target: ${{ secrets[format('{0}_SSH_PATH', matrix.environment)] }}
+          target: ${{ secrets[format('{0}_SSH_PATH', needs.check-environment.outputs.environment)] }}
           strip_components: 1
 
       - name: Start application
         uses: appleboy/ssh-action@v1.0.3
         with:
-          host: ${{ secrets[format('{0}_SSH_HOST', matrix.environment)] }}
-          port: ${{ secrets[format('{0}_SSH_PORT', matrix.environment)] }}
-          username: ${{ secrets[format('{0}_SSH_USERNAME', matrix.environment)] }}
-          key: ${{ secrets[format('{0}_SSH_PRIVATE_KEY', matrix.environment)] }}
+          host: ${{ secrets[format('{0}_SSH_HOST', needs.check-environment.outputs.environment)] }}
+          port: ${{ secrets[format('{0}_SSH_PORT', needs.check-environment.outputs.environment)] }}
+          username: ${{ secrets[format('{0}_SSH_USERNAME', needs.check-environment.outputs.environment)] }}
+          key: ${{ secrets[format('{0}_SSH_PRIVATE_KEY', needs.check-environment.outputs.environment)] }}
           script: |
-            cd ${{ secrets[format('{0}_SSH_PATH', matrix.environment)] }}
+            cd ${{ secrets[format('{0}_SSH_PATH', needs.check-environment.outputs.environment)] }}
             docker network create logging_network || true
             docker compose -f docker-compose.prod.yml pull
             docker compose -f docker-compose.prod.yml up -d
