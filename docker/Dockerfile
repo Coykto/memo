@@ -8,19 +8,18 @@ ENV PYTHONPATH=/app/src \
 # Set working directory
 WORKDIR /app
 
-# Install system dependencies and Poetry
+# Install system dependencies and UV
 RUN pip install --upgrade pip && \
-    pip install poetry
+    pip install uv
 
 # Copy dependency files
-COPY pyproject.toml poetry.lock ./
+COPY pyproject.toml uv.lock ./
 
 # Install project dependencies (without root package)
-RUN poetry config virtualenvs.create false && \
-    poetry install --no-interaction --no-ansi --no-root
+RUN uv sync
 
 # Copy source code and tests
 COPY src/ src/
 
 # Command to run your application (adjust to your entrypoint)
-ENTRYPOINT ["poetry", "run", "python", "api.py"]
+ENTRYPOINT ["uv", "run", "python", "api.py"]
