@@ -2,7 +2,7 @@
 FROM python:3.11-slim
 
 # Set environment variables
-ENV PYTHONPATH=/app/src \
+ENV PYTHONPATH=/app \
     PYTHONUNBUFFERED=1
 
 # Set working directory
@@ -15,7 +15,7 @@ RUN pip install --upgrade pip && \
 # Copy dependency files
 COPY pyproject.toml uv.lock ./
 
-# Install project dependencies (without root package)
+# Install project dependencies
 RUN uv sync
 
 # Copy source code

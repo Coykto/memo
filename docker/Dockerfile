@@ -2,7 +2,7 @@
 FROM python:3.11-slim
 
 # Set environment variables
-ENV PYTHONPATH=/app/src \
+ENV PYTHONPATH=/app \
     PYTHONUNBUFFERED=1
 
 # Set working directory
@@ -13,13 +13,13 @@ RUN pip install --upgrade pip && \
     pip install uv
 
 # Copy dependency files
-COPY pyproject.toml uv.lock ./
+COPY pyproject.toml uv.lock api.py ./
 
-# Install project dependencies (without root package)
+# Install project dependencies
 RUN uv sync
 
 # Copy source code and tests
 COPY src/ src/
 
-# Command to run your application (adjust to your entrypoint)
+# Command to run your application
 ENTRYPOINT ["uv", "run", "python", "api.py"]

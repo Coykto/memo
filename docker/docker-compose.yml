@@ -1,38 +1,35 @@
 services:
-
-  api:
+  memo_api:
     container_name: memo_api
-    build:
-      context: ..
-      dockerfile: docker/Dockerfile
-    ports:
-      - "8000:8000"
-    volumes:
-      - ../:/app
+    image: ${DOCKERHUB_USERNAME}/memo_api:${TAG:-latest}
+    restart: unless-stopped
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - PINECONE_API_KEY=${PINECONE_API_KEY}
+      - PINECONE_HOST=${PINECONE_HOST}
+      - CLAUDE_API_KEY=${CLAUDE_API_KEY}
     labels:
       - "prometheus.scrape=true"
       - "prometheus.app=memo_api"
       - "prometheus.port=8000"
     networks:
-      logging:
-        aliases:
-          - memo-api
+      - logging
 
-  tg:
+  memo_tg:
     container_name: memo_tg
-    build:
-      context: ..
-      dockerfile: src/clients/telegram_client/docker/Dockerfile
-    volumes:
-      - ../:/app
+    image: ${DOCKERHUB_USERNAME}/memo_tg:${TAG:-latest}
+    restart: unless-stopped
+    environment:
+      - TELEGRAM_API_TOKEN=${TELEGRAM_API_TOKEN}
+      - API_BASE_URL=http://memo_api:8000
+    depends_on:
+      - memo_api
     labels:
       - "prometheus.scrape=true"
       - "prometheus.app=memo_tg_bot"
       - "prometheus.port=8000"
     networks:
-      logging:
-        aliases:
-          - memo-tg
+      - logging
 
 networks:
   logging:
