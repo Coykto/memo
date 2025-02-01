@@ -113,7 +113,7 @@ jobs:
           DATA_FOLDER=/data
           UID=${{ secrets[format('{0}_SSH_UID', needs.check-environment.outputs.environment)] }}
           GID=${{ secrets[format('{0}_SSH_GID', needs.check-environment.outputs.environment)] }}
-          TAG=${{ steKps.get_version.outputs.VERSION }}
+          TAG=${{ steps.get_version.outputs.VERSION }}
           EOF
 
       - name: Deploy to server
