@@ -8,6 +8,8 @@ services:
       - PINECONE_API_KEY=${PINECONE_API_KEY}
       - PINECONE_HOST=${PINECONE_HOST}
       - CLAUDE_API_KEY=${CLAUDE_API_KEY}
+    volumes:
+      - ./api_data:/app
     labels:
       - "prometheus.scrape=true"
       - "prometheus.app=memo_api"
@@ -22,11 +24,13 @@ services:
     environment:
       - TELEGRAM_API_TOKEN=${TELEGRAM_API_TOKEN}
       - API_BASE_URL=http://memo_api:8000
+    volumes:
+      - ./tg_data:/app
     depends_on:
       - memo_api
     labels:
       - "prometheus.scrape=true"
-      - "prometheus.app=memo_tg_bot"
+      - "prometheus.app=memo_tg"
       - "prometheus.port=8000"
     networks:
       - logging
