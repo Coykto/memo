@@ -7,12 +7,12 @@ from uuid import uuid4
 from telegram import Update
 from telegram.ext import Application, ContextTypes, MessageHandler, filters
 
-from clients.telegram_client.client import MemoAPIClient
-from clients.telegram_client.config import settings
-from clients.telegram_client.processors.html_processor import HTMLProcessor
-from core.context import set_request_id
-from core.log import setup_logging
-from core.models import AudioData
+from src.clients.telegram_client.client import MemoAPIClient
+from src.clients.telegram_client.config import settings
+from src.clients.telegram_client.processors.html_processor import HTMLProcessor
+from src.core.context import set_request_id
+from src.core.log import setup_logging
+from src.core.models import AudioData
 
 
 @dataclass

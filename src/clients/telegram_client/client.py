@@ -1,7 +1,7 @@
 import httpx
 
-from core.context import get_request_id
-from core.models import AudioData
+from src.core.context import get_request_id
+from src.core.models import AudioData
 
 
 class MemoAPIClient:

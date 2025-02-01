@@ -1,7 +1,7 @@
 from jinja2 import Environment, FileSystemLoader
 
-from clients.telegram_client.config import settings
-from core.models import SearchResult
+from src.clients.telegram_client.config import settings
+from src.core.models import SearchResult
 
 
 class HTMLProcessor:
