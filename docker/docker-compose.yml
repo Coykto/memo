@@ -8,6 +8,7 @@ services:
       - PINECONE_API_KEY=${PINECONE_API_KEY}
       - PINECONE_HOST=${PINECONE_HOST}
       - CLAUDE_API_KEY=${CLAUDE_API_KEY}
+      - DATA_FOLDER=${DATA_FOLDER}
     volumes:
       - ./api_data:/data
     labels:
@@ -24,6 +25,7 @@ services:
     environment:
       - TELEGRAM_API_TOKEN=${TELEGRAM_API_TOKEN}
       - API_BASE_URL=http://memo_api:8000
+      - DATA_FOLDER=${DATA_FOLDER}
     volumes:
       - ./tg_data:/data
     depends_on:
