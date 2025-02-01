@@ -9,12 +9,12 @@ on:
       environment:
         description: 'Environment to deploy to'
         required: true
-        default: 'production'
+        default: 'PROD'
         type: choice
         options:
-          - production
-          - staging
-          - development
+          - PROD
+          - STAGING
+          - DEV
 
 jobs:
   deploy:
@@ -23,25 +23,18 @@ jobs:
 
     strategy:
       matrix:
-        include:
-          - environment: PROD
-            ssh_host: ${{ secrets.PROD_SSH_HOST }}
-            ssh_port: ${{ secrets.PROD_SSH_PORT }}
-            app_path: ${{ secrets.PROD_SSH_PATH }}
-          - environment: STAGING
-            ssh_host: ${{ secrets.STAGING_SSH_HOST }}
-            ssh_port: ${{ secrets.STAGING_SSH_PORT }}
-            app_path: ${{ secrets.STAGING_SSH_PATH }}
-          - environment: DEV
-            ssh_host: ${{ secrets.DEV_SSH_HOST }}
-            ssh_port: ${{ secrets.DEV_SSH_PORT }}
-            app_path: ${{ secrets.DEV_SSH_PATH }}
+        environment: [PROD, STAGING, DEV]
+
+    env:
+      SSH_HOST: ${{ secrets[format('{0}_SSH_HOST', matrix.environment)] }}
+      SSH_PORT: ${{ secrets[format('{0}_SSH_PORT', matrix.environment)] }}
+      APP_PATH: ${{ secrets[format('{0}_SSH_PATH', matrix.environment)] }}
 
     if: >-
       ${{
         (github.event_name == 'pull_request' && 
          github.event.pull_request.merged == true && 
-         matrix.environment == 'production') ||
+         matrix.environment == 'PROD') ||
         (github.event_name == 'workflow_dispatch' && 
          github.event.inputs.environment == matrix.environment)
       }}
@@ -96,32 +89,32 @@ jobs:
       - name: Deploy to server
         uses: appleboy/ssh-action@v1.0.3
         with:
-          host: ${{ matrix.ssh_host }}
-          port: ${{ matrix.ssh_port }}
+          host: ${{ env.SSH_HOST }}
+          port: ${{ env.SSH_PORT }}
           username: ${{ secrets[format('{0}_SSH_USERNAME', matrix.environment)] }}
           key: ${{ secrets[format('{0}_SSH_PRIVATE_KEY', matrix.environment)] }}
           script: |
-            mkdir -p ${{ matrix.app_path }}
+            mkdir -p ${{ env.APP_PATH }}
 
       - name: Copy files to server
         uses: appleboy/scp-action@v0.1.7
         with:
-          host: ${{ matrix.ssh_host }}
-          port: ${{ matrix.ssh_port }}
+          host: ${{ env.SSH_HOST }}
+          port: ${{ env.SSH_PORT }}
           username: ${{ secrets[format('{0}_SSH_USERNAME', matrix.environment)] }}
           key: ${{ secrets[format('{0}_SSH_PRIVATE_KEY', matrix.environment)] }}
           source: "docker/docker-compose.prod.yml,.env"
-          target: ${{ matrix.app_path }}
+          target: ${{ env.APP_PATH }}
           strip_components: 1
 
       - name: Start application
         uses: appleboy/ssh-action@v1.0.3
         with:
-          host: ${{ matrix.ssh_host }}
+          host: ${{ env.SSH_HOST }}
           username: ${{ secrets[format('{0}_SSH_USERNAME', matrix.environment)] }}
           key: ${{ secrets[format('{0}_SSH_PRIVATE_KEY', matrix.environment)] }}
           script: |
-            cd ${{ matrix.app_path }}
+            cd ${{ env.APP_PATH }}
             docker network create logging_network || true
             docker compose -f docker-compose.prod.yml pull
             docker compose -f docker-compose.prod.yml up -d
