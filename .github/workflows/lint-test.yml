@@ -35,3 +35,4 @@ jobs:
           PINECONE_API_KEY: "secret"
           PINECONE_HOST: "secret"
           CLAUDE_API_KEY: "secret"
+          DATA_FOLDER: "."
