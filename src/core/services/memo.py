@@ -56,6 +56,8 @@ class MemoService:
         memo = await self.storage.delete_memo(user_id, memo_id)
         if memo is None:
             return None
+
+        await self.vector_storage.delete_vector(memo_id=memo.id)
         return Memo(
             id=memo_id,
             text=memo.text,

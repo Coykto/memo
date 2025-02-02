@@ -16,3 +16,8 @@ class VectorStorage(ABC):
     ) -> list[dict]:
         """Search for similar vectors"""
         pass
+
+    @abstractmethod
+    async def delete_vector(self, memo_id: str):
+        """Delete vector from database"""
+        pass
