@@ -1,9 +1,9 @@
 {% if search_results is defined and search_results|length > 0 %}
 {% for search_result in search_results %}
+<b>Deleted Memo:</b>
 <b>{{ search_result.date|date_format }} • {{ search_result.title }}</b>
 {{ search_result.text }}
-<i>Press /del_{{ search_result.id }} to delete this message</i>
 {% endfor %}
 {% else %}
-    No results
+    Nothing was deleted
 {% endif %}

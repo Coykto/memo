@@ -1,8 +1,9 @@
 from io import IOBase
-from src.api.validators import is_non_empty_file
-from typing import Optional, Literal
+from typing import Literal, Optional
 
-from pydantic import BaseModel, Field, ConfigDict, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator
+
+from src.api.validators import is_non_empty_file
 
 
 class AudioData(BaseModel):

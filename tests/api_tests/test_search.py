@@ -1,7 +1,7 @@
+from datetime import datetime
 from unittest.mock import AsyncMock
 
 import pytest
-from datetime import datetime
 
 from src.api.dependencies import get_search_engine
 from src.core.models import Memo, SearchResult

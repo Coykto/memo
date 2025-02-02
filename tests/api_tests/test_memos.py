@@ -1,8 +1,8 @@
 import io
+from datetime import datetime
 from unittest.mock import AsyncMock
 
 import pytest
-from datetime import datetime
 
 from src.api.dependencies import get_memo_service
 from src.core.models import Memo
@@ -180,3 +180,79 @@ def test_create_memo_malformed_audio(
 
         # Reset mock for next iteration
         mock_memo_service.create_memo_from_audio.reset_mock()
+
+
+# ==
+def test_delete_memo_success(test_client, mock_memo_service):
+    # Setup test data
+    test_user_id = "test-user-123"
+    test_memo_id = "test-memo-123"
+    test_memo = Memo(
+        id=test_memo_id,
+        text="Test memo content",
+        title="Test memo title",
+        user_id=test_user_id,
+        date=datetime.now().isoformat(),
+    )
+
+    # Configure mock service to return our test memo
+    mock_memo_service.delete_memo.return_value = test_memo
+
+    # Override dependency
+    test_client.app.dependency_overrides[get_memo_service] = lambda: mock_memo_service
+
+    # Make request
+    response = test_client.delete(f"/v1/memos/{test_memo_id}?user_id={test_user_id}")
+
+    # Verify response
+    assert response.status_code == 200
+    data = response.json()
+    assert data["id"] == test_memo_id
+    assert data["text"] == test_memo.text
+    assert data["title"] == test_memo.title
+
+    # Verify service was called with correct parameters
+    mock_memo_service.delete_memo.assert_called_once_with(test_user_id, test_memo_id)
+
+
+def test_delete_memo_not_found(test_client, mock_memo_service):
+    # Configure mock service to return None (memo not found)
+    mock_memo_service.delete_memo.return_value = None
+
+    # Override dependency
+    test_client.app.dependency_overrides[get_memo_service] = lambda: mock_memo_service
+
+    # Make request
+    response = test_client.delete("/v1/memos/nonexistent-memo?user_id=test-user")
+
+    # Verify response
+    assert response.status_code == 404
+    data = response.json()
+    assert "not found" in data["details"].lower()
+
+
+def test_delete_memo_missing_user_id(test_client, mock_memo_service):
+    # Override dependency
+    test_client.app.dependency_overrides[get_memo_service] = lambda: mock_memo_service
+
+    # Make request without user_id
+    response = test_client.delete("/v1/memos/test-memo-123")
+
+    # Verify response
+    assert response.status_code == 422
+    mock_memo_service.delete_memo.assert_not_called()
+
+
+def test_delete_memo_service_error(test_client, mock_memo_service):
+    # Configure mock to raise an exception
+    mock_memo_service.delete_memo.side_effect = Exception("Service error")
+
+    # Override dependency
+    test_client.app.dependency_overrides[get_memo_service] = lambda: mock_memo_service
+
+    # Make request
+    response = test_client.delete("/v1/memos/test-memo-123?user_id=test-user")
+
+    # Verify response
+    assert response.status_code == 500
+    assert "Internal server error" in response.json()["message"]

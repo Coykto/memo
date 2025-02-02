@@ -32,3 +32,10 @@ class MemoAPIClient:
             headers={"X-Request-ID": get_request_id()},
         )
         return response.json()
+
+    async def delete_memo(self, user_id: str, memo_id: str):
+        response = await self.client.delete(
+            f"/{self.version}/memos/{memo_id}",
+            params={"user_id": user_id},
+        )
+        return response.json()

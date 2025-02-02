@@ -1,5 +1,5 @@
 import logging
-from enum import auto, StrEnum
+from enum import StrEnum, auto
 from typing import Any, Dict, Optional
 
 

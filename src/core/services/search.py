@@ -30,7 +30,7 @@ class SearchEngine:
         # Fetch full texts from database
         results = []
         for vec_result in vector_results:
-            memo = await self.storage.get_memo(vec_result["id"])
+            memo = await self.storage.get_memo(user_id, vec_result["id"])
             if memo is None:
                 logging.warning(
                     f"Memo {vec_result['id']} found in vector storage but missing from main storage",

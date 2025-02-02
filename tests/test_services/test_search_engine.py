@@ -5,7 +5,7 @@ import pytest
 from openai import OpenAIError
 from pinecone.exceptions import PineconeException
 
-from src.core.models import VectorData, Memo
+from src.core.models import Memo, VectorData
 from src.core.services.search import SearchEngine
 
 
@@ -44,7 +44,7 @@ async def test_search_complete_flow():
     # Verify the complete flow
     mock_text_processor.process.assert_called_once_with(query)
     mock_vector_storage.search.assert_called_once_with(test_vector, user_id, 10)
-    mock_storage.get_memo.assert_called_once_with(mock_memo_id)
+    mock_storage.get_memo.assert_called_once_with(user_id, mock_memo_id)
 
     # Verify results
     assert len(results) == 1
@@ -116,7 +116,7 @@ async def test_search_with_missing_memo():
     # Configure storage to return a memo for one ID but None for the other
     mock_storage = AsyncMock()
 
-    async def get_memo_side_effect(memo_id: str):
+    async def get_memo_side_effect(user_id: str, memo_id: str):
         if memo_id == existing_memo_id:
             return Memo(
                 id=existing_memo_id,
@@ -332,7 +332,7 @@ async def test_search_minimum_score_threshold():
     ]
 
     mock_storage = AsyncMock()
-    mock_storage.get_memo.side_effect = lambda memo_id: Memo(
+    mock_storage.get_memo.side_effect = lambda user_id, memo_id: Memo(
         id=memo_id, text=f"Memo {memo_id}", title=f"Title {memo_id}", user_id=user_id, date=datetime.now().isoformat()
     )
 

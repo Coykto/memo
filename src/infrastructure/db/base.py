@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from typing import Optional
 
 from src.core.models import Memo
 
@@ -10,6 +11,11 @@ class Storage(ABC):
         pass
 
     @abstractmethod
-    async def get_memo(self, memo_id: str) -> Memo:
-        """Retrieve memo text by ID"""
+    async def get_memo(self, user_id: str, memo_id: str) -> Optional[Memo]:
+        """Retrieve memo by ID"""
+        pass
+
+    @abstractmethod
+    async def delete_memo(self, user_id: str, memo_id: str) -> Optional[Memo]:
+        """Delete memo by ID"""
         pass

@@ -1,3 +1,5 @@
+from typing import Optional
+
 from src.core.models import AudioData, Memo
 from src.core.processors.audio import AudioProcessor
 from src.core.processors.text import TextProcessor
@@ -33,15 +35,31 @@ class MemoService:
         vector_data = await self.text_processor.process(transcription.text)
 
         # Store in both databases
-        memo_id = await self.storage.store_memo(text=transcription.text, title=memo_summary.summary, user_id=user_id)
-        await self.vector_storage.store_vector(vector_data.vector, memo_id=memo_id, metadata={"user_id": user_id})
+        memo_id = await self.storage.store_memo(
+            text=transcription.text, title=memo_summary.summary, user_id=user_id
+        )
+        await self.vector_storage.store_vector(
+            vector_data.vector, memo_id=memo_id, metadata={"user_id": user_id}
+        )
 
-        memo = await self.storage.get_memo(memo_id)
+        memo = await self.storage.get_memo(user_id, memo_id)
         return Memo(
             id=memo_id,
             text=memo.text,
             title=memo.title,
             user_id=user_id,
             vector=vector_data.vector,
+            date=memo.date,
+        )
+
+    async def delete_memo(self, user_id: str, memo_id: str) -> Optional[Memo]:
+        memo = await self.storage.delete_memo(user_id, memo_id)
+        if memo is None:
+            return None
+        return Memo(
+            id=memo_id,
+            text=memo.text,
+            title=memo.title,
+            user_id=user_id,
             date=memo.date,
         )
