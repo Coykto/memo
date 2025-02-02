@@ -1,4 +1,6 @@
-from fastapi import APIRouter, Depends, File, UploadFile
+import json
+
+from fastapi import APIRouter, Depends, File, Response, UploadFile
 
 from src.api.dependencies import get_memo_service
 from src.api.schemas import MemoResponse
@@ -30,4 +32,22 @@ async def create_memo(
     )
 
     memo = await memo_service.create_memo_from_audio(audio_data, user_id)
+    return MemoResponse.from_memo(memo)
+
+
+@router.delete(
+    "/{memo_id}",
+    summary="Delete Voice Memo",
+    description="Delete a voice memo by ID.",
+)
+async def delete_memo(
+    memo_id: str,
+    user_id: str,
+    memo_service: MemoService = Depends(get_memo_service),
+):
+    memo = await memo_service.delete_memo(user_id, memo_id)
+    if memo is None:
+        return Response(
+            status_code=404, content=json.dumps({"details": "Memo not found"})
+        )
     return MemoResponse.from_memo(memo)

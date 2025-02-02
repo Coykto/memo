@@ -12,11 +12,14 @@ from src.infrastructure.db.local_storage import LocalStorage
 from src.infrastructure.summarization.base import Summarizer
 from src.infrastructure.summarization.claude_summarizer import ClaudeSummarizer
 from src.infrastructure.transcription.base import Transcriber
-from src.infrastructure.transcription.openai_transcriber import OpenAITranscriber
+from src.infrastructure.transcription.openai_transcriber import \
+    OpenAITranscriber
 from src.infrastructure.vector_db.base import VectorStorage
-from src.infrastructure.vector_db.pinecone_vector_storage import PineconeVectorStorage
+from src.infrastructure.vector_db.pinecone_vector_storage import \
+    PineconeVectorStorage
 from src.infrastructure.vectorization.base import Vectorizer
-from src.infrastructure.vectorization.open_ai_vectorizer import OpenAIVectorizer
+from src.infrastructure.vectorization.open_ai_vectorizer import \
+    OpenAIVectorizer
 
 
 @lru_cache

@@ -20,6 +20,7 @@ dependencies = [
     "pytest-asyncio<1.0.0,>=0.25.3",
     "pydantic==2.9",
     "filetype>=1.2.0",
+    "black>=24.10.0",
 ]
 name = "memo"
 version = "0.1.0"

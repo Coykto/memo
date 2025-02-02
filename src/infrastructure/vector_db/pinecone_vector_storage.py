@@ -15,6 +15,10 @@ class PineconeVectorStorage(VectorStorage):
             vectors=[{"id": memo_id, "values": vector, "metadata": metadata}]
         )
 
+    async def delete_vector(self, memo_id: str):
+        """Delete vector from database"""
+        self.index.delete(ids=[memo_id])
+
     async def search(
         self, query_vector: list[float], user_id: str, limit: int = 3
     ) -> list[dict]:

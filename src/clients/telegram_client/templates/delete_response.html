@@ -1,0 +1,9 @@
+{% for search_result in search_results %}
+    {% if search_result.details %}
+        {{ search_result.details }}
+    {% else %}
+        <b>Deleted Memo:</b>
+        <b>{{ search_result.date|date_format }} • {{ search_result.title }}</b>
+        {{ search_result.text }}
+    {% endif %}
+{% endfor %}

@@ -89,6 +89,22 @@ class TelegramBot:
         html = await self.html_processor.process(response["results"])
         await update.message.reply_html(html)
 
+    async def handle_message_deletion(
+        self, update: Update, context: ContextTypes.DEFAULT_TYPE
+    ) -> None:
+        """Handler for the /del_<message_id> command"""
+        set_request_id(str(uuid4()))
+        logging.info(
+            f"Received memo deletion request from {update.effective_user.first_name}"
+        )
+
+        user_id = str(update.effective_chat.id)
+        memo_id = update.message.text.split("_")[1]
+
+        deleted_memo = await self.memo_client.delete_memo(user_id, memo_id)
+        html = await self.html_processor.process([deleted_memo], response_type="delete")
+        await update.message.reply_html(html)
+
     def setup_handlers(self, application: Application) -> None:
         """Set up message handlers for the application."""
         application.add_handler(
@@ -97,6 +113,12 @@ class TelegramBot:
         application.add_handler(
             MessageHandler(
                 (filters.VOICE | filters.AUDIO) & ~filters.COMMAND, self.handle_audio
+            )
+        )
+        application.add_handler(
+            MessageHandler(
+                filters.TEXT & filters.Regex(r"^/del_[0-9]+$"),
+                self.handle_message_deletion,
             )
         )
         logging.info("Set up Telegram Bot handlers")

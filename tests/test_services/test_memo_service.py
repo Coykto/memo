@@ -6,7 +6,8 @@ import pytest
 from anthropic import AnthropicError
 from openai import OpenAIError
 
-from src.core.models import AudioData, TranscriptionResult, VectorData, Summary, Memo
+from src.core.models import (AudioData, Memo, Summary, TranscriptionResult,
+                             VectorData)
 from src.core.services.memo import MemoService
 
 
@@ -71,7 +72,7 @@ async def test_create_memo_complete_flow():
     mock_vector_storage.store_vector.assert_called_once_with(
         test_vector, memo_id=test_memo_id, metadata={"user_id": test_user_id}
     )
-    mock_storage.get_memo.assert_called_once_with(test_memo_id)
+    mock_storage.get_memo.assert_called_once_with(test_user_id, test_memo_id)
 
     # Verify the result
     assert result.id == test_memo_id
@@ -290,3 +291,97 @@ async def test_create_memo_vector_storage_error():
     # Verify we tried to store in both places
     mock_storage.store_memo.assert_called_once()
     mock_vector_storage.store_vector.assert_called_once()
+
+
+async def test_delete_memo_success():
+    # Setup test data
+    test_user_id = "test-user-123"
+    test_memo_id = "test-memo-123"
+    test_memo_date = datetime.now().isoformat()
+    test_memo = Memo(
+        id=test_memo_id,
+        text="Test memo content",
+        title="Test memo title",
+        user_id=test_user_id,
+        date=test_memo_date,
+    )
+
+    # Configure mocks
+    mock_audio_processor = AsyncMock()
+    mock_text_processor = AsyncMock()
+    mock_vector_storage = AsyncMock()
+    mock_summarizer = AsyncMock()
+
+    # Configure storage mock to return our test memo
+    mock_storage = AsyncMock()
+    mock_storage.delete_memo.return_value = test_memo
+
+    # Create service instance
+    service = MemoService(
+        audio_processor=mock_audio_processor,
+        text_processor=mock_text_processor,
+        vector_storage=mock_vector_storage,
+        storage=mock_storage,
+        summarizer=mock_summarizer,
+    )
+
+    # Execute service method
+    result = await service.delete_memo(test_user_id, test_memo_id)
+
+    # Verify the storage was called with correct parameters
+    mock_storage.delete_memo.assert_called_once_with(test_user_id, test_memo_id)
+
+    # Verify the result matches our test memo
+    assert result.id == test_memo_id
+    assert result.text == test_memo.text
+    assert result.title == test_memo.title
+    assert result.user_id == test_user_id
+    assert result.date == test_memo_date
+
+
+async def test_delete_memo_not_found():
+    # Setup
+    test_user_id = "test-user-123"
+    test_memo_id = "nonexistent-memo"
+
+    # Configure storage mock to return None (memo not found)
+    mock_storage = AsyncMock()
+    mock_storage.delete_memo.return_value = None
+
+    service = MemoService(
+        audio_processor=AsyncMock(),
+        text_processor=AsyncMock(),
+        vector_storage=AsyncMock(),
+        storage=mock_storage,
+        summarizer=AsyncMock(),
+    )
+
+    # Execute service method and verify result
+    result = await service.delete_memo(test_user_id, test_memo_id)
+    assert result is None
+    mock_storage.delete_memo.assert_called_once_with(test_user_id, test_memo_id)
+
+
+async def test_delete_memo_storage_error():
+    # Setup
+    test_user_id = "test-user-123"
+    test_memo_id = "test-memo-123"
+
+    # Configure storage mock to raise an exception
+    mock_storage = AsyncMock()
+    mock_storage.delete_memo.side_effect = Exception("Storage error")
+
+    service = MemoService(
+        audio_processor=AsyncMock(),
+        text_processor=AsyncMock(),
+        vector_storage=AsyncMock(),
+        storage=mock_storage,
+        summarizer=AsyncMock(),
+    )
+
+    # Verify the error is propagated
+    with pytest.raises(Exception) as exc_info:
+        await service.delete_memo(test_user_id, test_memo_id)
+
+    assert "Storage error" in str(exc_info.value)
+    mock_storage.delete_memo.assert_called_once_with(test_user_id, test_memo_id)

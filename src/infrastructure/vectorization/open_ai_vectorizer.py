@@ -2,13 +2,8 @@ import logging
 
 from openai import Client
 from openai._exceptions import RateLimitError
-from tenacity import (
-    retry,
-    wait_exponential,
-    stop_after_attempt,
-    retry_if_exception_type,
-    before_sleep_log,
-)
+from tenacity import (before_sleep_log, retry, retry_if_exception_type,
+                      stop_after_attempt, wait_exponential)
 
 from src.core.models import VectorData
 from src.infrastructure.vectorization.base import Vectorizer
