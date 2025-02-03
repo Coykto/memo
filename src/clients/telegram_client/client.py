@@ -28,7 +28,7 @@ class MemoAPIClient:
     async def search_memos(self, query: str, user_id: str):
         response = await self.client.post(
             f"/{self.version}/search",
-            json={"query": query, "user_id": user_id},
+            json={"query": query, "user_id": user_id, "limit": 7},
             headers={"X-Request-ID": get_request_id()},
         )
         return response.json()
